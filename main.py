@@ -31,7 +31,7 @@ def main():
 
             #ICPM
             if proto == 1:
-                icmp_type, code, checksum, data = icmp_packet(data)
+                icmp_type, code, checksum, data = icmp_packets(data)
                 print(TAB_1 + 'ICPM Packet:')
                 print(TAB_2 + 'Type: {}, Code: {}, Checksum: {}'.format(icmp_type, code, checksum))
                 print(TAB_2 + 'Data:')
@@ -39,7 +39,7 @@ def main():
 
             #TCP
             elif proto == 6:
-                (src_port, dest_port, sequence, acknowledgement, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin, data[offset:]) = tcp_segment(data)
+                (src_port, dest_port, sequence, acknowledgement, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin, data) = tcp_segment(data)
                 print(TAB_1 + 'TCP Segment:')
                 print(TAB_2 + 'Source Port: {}, Destination Port: {}'.format(src_port, dest_port))
                 print(TAB_2 + 'Sequence: {}, Acknowledgement: {}'.format(sequence, acknowledgement))
