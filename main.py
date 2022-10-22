@@ -1,10 +1,6 @@
 import socket
 import struct
 import textwrap
-<<<<<<< HEAD
-
-=======
->>>>>>> ce2c939ce121ab0fbb2a17b0305a26ed37c1f638
 
 TAB_1 = '\t - '
 TAB_2 = '\t\t - '
