@@ -52,7 +52,7 @@ def main():
             elif proto == 17:
                 src_port, dest_port, length, data = udp_segment(data)
                 print(TAB_1 + 'UDP Segment:')
-                print(TAB_2 + 'Sorce Port: {}, Destination Port: {}, Length: {}'.format(src_port, dest_port, ))
+                print(TAB_2 + 'Sorce Port: {}, Destination Port: {}, Length: {}'.format(src_port, dest_port))
 
             #Other
             else:
