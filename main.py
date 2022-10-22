@@ -1,3 +1,5 @@
-import scapy
-import ansible
+import socket
+import struct
+import textwrap
+
 
