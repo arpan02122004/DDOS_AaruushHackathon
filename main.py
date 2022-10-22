@@ -39,7 +39,7 @@ def main():
 
             #TCP
             elif proto == 6:
-                (src_port, dest_port, sequence, acknowledgement, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin, data[offset:]) = tcp_segment(data)
+                (src_port, dest_port, sequence, acknowledgement, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin, data) = tcp_segment(data)
                 print(TAB_1 + 'TCP Segment:')
                 print(TAB_2 + 'Source Port: {}, Destination Port: {}'.format(src_port, dest_port))
                 print(TAB_2 + 'Sequence: {}, Acknowledgement: {}'.format(sequence, acknowledgement))
@@ -54,7 +54,7 @@ def main():
                 print(TAB_1 + 'UDP Segment:')
                 print(TAB_2 + 'Sorce Port: {}, Destination Port: {}, Length: {}'.format(src_port, dest_port, length))
                 print(format_multi_line(DATA_TAB_3, data))
-                
+
             #Other
             else:
                 print(TAB_1 + 'Data:')
