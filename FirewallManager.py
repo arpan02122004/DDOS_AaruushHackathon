@@ -1,4 +1,4 @@
-from netmiko import Netmiko
+from netmiko import netmiko
 fw_01 = {'host': '192.168.0.21',
          'username': 'admin',
           'password': 'arpanfirewall',
