@@ -29,6 +29,10 @@ def main():
     numbericmp = 0
     numbertcp = 0
     numberudp = 0
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    f = open("thread1output.txt", "a")
+    f.write("\n\nProgram Run Time and date : {}\n\n".format(dt_string))
+    f.close()
     while True:
         raw_data, addr = conn.recvfrom(65535)
         dest_mac, src_mac, eth_proto, data = ethernet_frame(raw_data)
@@ -103,9 +107,13 @@ def resource_check():
     averageicmp = float(numbericmp/endtime)
     averagetcp = float(numbertcp/endtime)
     averageudp = float(numberudp/endtime)
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    f = open("thread2output.txt", "a")
+    f.write("\n\nProgram Run Time and date : {}\n\n".format(dt_string))
+    f.close()
     while True:
         f = open("thread2output.txt", "a")
-        f.write("\naverageicmp : {}\naveragetcp : {}\naverageudp : {}".format(averageicmp, averagetcp, averageudp))
+        f.write("\naverageicmp : {}\naveragetcp : {}\naverageudp : {}\n\n".format(averageicmp, averagetcp, averageudp))
         f.close()
     if ( endtime % 60000) == 0:
         if psutil.virtual_memory()[2] >= 70:

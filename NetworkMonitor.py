@@ -87,6 +87,8 @@ def main():
         else:
             print(TAB_1 + 'Data:')
             print(format_multi_line(DATA_TAB_1, data))
+
+        print("Average ICMP: {}\n Average TCP : {}\n Average UDP{}".format(averageicmp, averagetcp, averageudp))
         print("Average Rate : ", (averageicmp + averagetcp + averageudp) / 3)
 
 
