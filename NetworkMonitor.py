@@ -1,6 +1,7 @@
 import socket
 import struct
 import textwrap
+from datetime import datetime
 
 TAB_1 = '\t - '
 TAB_2 = '\t\t - '
@@ -11,10 +12,17 @@ DATA_TAB_1 = '\t '
 DATA_TAB_2 = '\t\t '
 DATA_TAB_3 = '\t\t\t '
 DATA_TAB_4 = '\t\t\t\t '
+start = datetime.now()
 
 
 def main():
     conn = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))
+    numbericmp = 0
+    numbertcp = 0
+    numberudp = 0
+    averageicmp = 0
+    averagetcp = 0
+    averageudp = 0
 
     while True:
         raw_data, addr = conn.recvfrom(65535)
@@ -22,46 +30,64 @@ def main():
         print('\nEthernet Frame')
         print(TAB_1 + 'Destination: {}, Source: {}, Protocol: {}'.format(dest_mac, src_mac, eth_proto))
 
-        #8 for IPv4
+        # 8 for IPv4
         if eth_proto == 8:
             (version, header_length, ttl, proto, src, target, data) = ipv4_packet(data)
             print(TAB_1 + 'IPv4 Packet:')
             print(TAB_2 + 'Version: {}, Header Length: {}, TTL: {}'.format(version, header_length, ttl))
             print(TAB_2 + 'Protocol: {}, Source: {}, Target: {}'.format(proto, src, target))
 
-            #ICPM
+            # ICPM
             if proto == 1:
                 icmp_type, code, checksum, data = icmp_packets(data)
                 print(TAB_1 + 'ICPM Packet:')
                 print(TAB_2 + 'Type: {}, Code: {}, Checksum: {}'.format(icmp_type, code, checksum))
                 print(TAB_2 + 'Data:')
                 print(format_multi_line(DATA_TAB_3, data))
+                numbericmp += 1
+                endtime = ((datetime.now() - start).total_seconds() * 10 ** 3)
+                averageicmp = numbericmp / endtime
+                print("avgvalue : ", averageicmp)
 
-            #TCP
+
+
+            # TCP
             elif proto == 6:
-                (src_port, dest_port, sequence, acknowledgement, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin, data) = tcp_segment(data)
+                (src_port, dest_port, sequence, acknowledgement, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn,
+                 flag_fin, data) = tcp_segment(data)
                 print(TAB_1 + 'TCP Segment:')
                 print(TAB_2 + 'Source Port: {}, Destination Port: {}'.format(src_port, dest_port))
                 print(TAB_2 + 'Sequence: {}, Acknowledgement: {}'.format(sequence, acknowledgement))
                 print(TAB_2 + 'Flags:')
-                print(TAB_3 + 'URG: {}, ACK: {}, PSH: {}, RST: {}, SYN: {}, FIN: {}'.format(flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin))
+                print(
+                    TAB_3 + 'URG: {}, ACK: {}, PSH: {}, RST: {}, SYN: {}, FIN: {}'.format(flag_urg, flag_ack, flag_psh,
+                                                                                          flag_rst, flag_syn, flag_fin))
                 print(TAB_2 + 'Data:')
                 print(format_multi_line(DATA_TAB_3, data))
+                numbertcp += 1
+                endtime = ((datetime.now() - start).total_seconds() * 10 ** 3)
+                averagetcp = numbertcp / endtime
+                print("avgvalue : ", averagetcp)
 
-            #UDP
-            elif proto == 17:
+            # UDP
+            if proto == 17:
                 src_port, dest_port, length, data = udp_segment(data)
                 print(TAB_1 + 'UDP Segment:')
                 print(TAB_2 + 'Sorce Port: {}, Destination Port: {}, Length: {}'.format(src_port, dest_port, length))
                 print(format_multi_line(DATA_TAB_3, data))
+                numberudp += 1
+                endtime = ((datetime.now() - start).total_seconds() * 10 ** 3)
+                averageudp = numberudp / endtime
+                print("avgvalue : ", averageudp)
 
-            #Other
+            # Other
             else:
                 print(TAB_1 + 'Data:')
                 print(format_multi_line(DATA_TAB_2, data))
         else:
             print(TAB_1 + 'Data:')
             print(format_multi_line(DATA_TAB_1, data))
+        print("Average Rate : ", (averageicmp + averagetcp + averageudp) / 3)
 
 
 # Unpack ethernet frame
@@ -75,7 +101,8 @@ def get_mac_addr(bytes_addr):
     bytes_str = map('{:02x}'.format, bytes_addr)
     return ':'.join(bytes_str).upper()
 
-#Unpacks IPv4 packet
+
+# Unpacks IPv4 packet
 def ipv4_packet(data):
     version_header_length = data[0]
     version = version_header_length >> 4
@@ -84,18 +111,18 @@ def ipv4_packet(data):
     return version, header_length, ttl, proto, ipv4(src), ipv4(target), data[header_length:]
 
 
-#Returns properly formatted IPv4 address
+# Returns properly formatted IPv4 address
 def ipv4(addr):
     return '.'.join(map(str, addr))
 
 
-#Unpacks ICMP packet
+# Unpacks ICMP packet
 def icmp_packets(data):
     icmp_type, code, checksum = struct.unpack('! B B H', data[:4])
     return icmp_type, code, checksum, data[4:]
 
 
-#Unpacks TCP segment
+# Unpacks TCP segment
 def tcp_segment(data):
     (src_port, dest_port, sequence, acknowledgement, offset_reserved_flags) = struct.unpack('! H H L L H', data[:14])
     offset = (offset_reserved_flags >> 12) * 4
@@ -105,16 +132,17 @@ def tcp_segment(data):
     flag_rst = (offset_reserved_flags & 4) >> 2
     flag_syn = (offset_reserved_flags & 2) >> 1
     flag_fin = offset_reserved_flags & 1
-    return src_port, dest_port, sequence, acknowledgement, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin, data[offset:]
+    return src_port, dest_port, sequence, acknowledgement, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin, data[
+                                                                                                                       offset:]
 
 
-#Unpack UDP segment
+# Unpack UDP segment
 def udp_segment(data):
     src_port, dest_port, size = struct.unpack('! H H 2x H', data[:8])
     return src_port, dest_port, size, data[8:]
 
 
-#Formats multi-line data
+# Formats multi-line data
 def format_multi_line(prefix, string, size=80):
     size -= len(prefix)
     if isinstance(string, bytes):
@@ -122,5 +150,6 @@ def format_multi_line(prefix, string, size=80):
         if size % 2:
             size -= 1
     return '\n'.join([prefix + line for line in textwrap.wrap(string, size)])
+
 
 main()
