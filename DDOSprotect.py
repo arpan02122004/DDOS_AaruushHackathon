@@ -20,6 +20,7 @@ def main():
     global start
     start = datetime.now()
     global endtime
+    endtime = 0
     conn = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))
     global numbericmp
     global numbertcp
@@ -50,7 +51,7 @@ def main():
                 print(TAB_2 + 'Data:')
                 print(format_multi_line(DATA_TAB_3, data))
                 numbericmp += 1
-                f.write("\n Numbericmp : ", numbericmp)
+                f.write("\n Numbericmp : {}".format(numbericmp))
 
             #TCP
             elif proto == 6:
@@ -63,7 +64,7 @@ def main():
                 print(TAB_2 + 'Data:')
                 print(format_multi_line(DATA_TAB_3, data))
                 numbertcp +=1
-                f.write("\n Numbertcp : ", numbertcp)
+                f.write("\n Numbertcp : {}".format(numbertcp))
 
             #UDP
             elif proto == 17:
@@ -72,7 +73,7 @@ def main():
                 print(TAB_2 + 'Sorce Port: {}, Destination Port: {}, Length: {}'.format(src_port, dest_port, length))
                 print(format_multi_line(DATA_TAB_3, data))
                 numberudp +=1
-                f.write("\n Numberudp : ", numberudp)
+                f.write("\n Numberudp : {}".format(numberudp))
 
             #Other
             else:
@@ -103,7 +104,7 @@ def resource_check():
     averageudp = float(numberudp/endtime)
     while True:
         f = open("thhread2output.txt", "a")
-        f.write("\naverageicmp : ", averageicmp, "\naveragetcp : ", averagetcp, "\naverageudp : ", averageudp)
+        f.write("\naverageicmp : {}\naveragetcp : {}\naverageudp : {}".format(averageicmp, averagetcp, averageudp))
         f.close()
     if ( endtime % 60000) == 0:
         if psutil.virtual_memory()[2] >= 70:
