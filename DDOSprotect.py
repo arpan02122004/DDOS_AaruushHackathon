@@ -160,7 +160,7 @@ def format_multi_line(prefix, string, size=80):
     return '\n'.join([prefix + line for line in textwrap.wrap(string, size)])
 
 if __name__ == "__main__":
-    t1 = threading.Thread(target=main, args=(0,))
-    t2 = threading.Thread(target=resource_check, args=(0,))
+    t1 = threading.Thread(target=main)
+    t2 = threading.Thread(target=resource_check)
     t1.start()
     t2.start()
