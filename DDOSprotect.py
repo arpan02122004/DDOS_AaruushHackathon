@@ -19,6 +19,7 @@ DATA_TAB_4 = '\t\t\t\t '
 def main():
     global start
     start = datetime.now()
+    global endtime
     conn = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))
     global numbericmp
     global numbertcp
@@ -35,9 +36,11 @@ def main():
         #8 for IPv4
         if eth_proto == 8:
             (version, header_length, ttl, proto, src, target, data) = ipv4_packet(data)
-            print(TAB_1 + 'IPv4 Packet:')
-            print(TAB_2 + 'Version: {}, Header Length: {}, TTL: {}'.format(version, header_length, ttl))
-            print(TAB_2 + 'Protocol: {}, Source: {}, Target: {}'.format(proto, src, target))
+            one = TAB_1 + 'IPv4 Packet:'
+            two = TAB_2 + 'Version: {}, Header Length: {}, TTL: {}'.format(version, header_length, ttl)
+            three = TAB_2 + 'Protocol: {}, Source: {}, Target: {}'.format(proto, src, target)
+            f = open("thread1output.txt", "a")
+            f.write("\n",one, "\n", two, "\n", three)
 
             #ICMP
             if proto == 1:
@@ -47,6 +50,7 @@ def main():
                 print(TAB_2 + 'Data:')
                 print(format_multi_line(DATA_TAB_3, data))
                 numbericmp += 1
+                f.write("\n Numbericmp : ", numbericmp)
 
             #TCP
             elif proto == 6:
@@ -59,6 +63,7 @@ def main():
                 print(TAB_2 + 'Data:')
                 print(format_multi_line(DATA_TAB_3, data))
                 numbertcp +=1
+                f.write("\n Numbertcp : ", numbertcp)
 
             #UDP
             elif proto == 17:
@@ -67,11 +72,15 @@ def main():
                 print(TAB_2 + 'Sorce Port: {}, Destination Port: {}, Length: {}'.format(src_port, dest_port, length))
                 print(format_multi_line(DATA_TAB_3, data))
                 numberudp +=1
+                f.write("\n Numberudp : ", numberudp)
 
             #Other
             else:
                 print(TAB_1 + 'Data:')
                 print(format_multi_line(DATA_TAB_2, data))
+
+            endtime = ((datetime.now() - start).total_seconds() * 10 ** 3)
+            f.close()
         else:
             print(TAB_1 + 'Data:')
             print(format_multi_line(DATA_TAB_1, data))
@@ -86,11 +95,16 @@ def resource_check():
     averageicmp = 0
     averagetcp = 0
     averageudp = 0
-    endtime = ((datetime.now() - start).total_seconds() * 10**3)
+
+    print("\n\n\n endtime \n\n\n", endtime)
     #Average values are there by running NetwirkMonitor Script for 3 hours
     averageicmp = float(numbericmp/endtime)
     averagetcp = float(numbertcp/endtime)
     averageudp = float(numberudp/endtime)
+    while True:
+        f = open("thhread2output.txt", "a")
+        f.write("\naverageicmp : ", averageicmp, "\naveragetcp : ", averagetcp, "\naverageudp : ", averageudp)
+        f.close()
     if ( endtime % 60000) == 0:
         if psutil.virtual_memory()[2] >= 70:
             load1, load5, load15 = psutil.getloadavg()
