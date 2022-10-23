@@ -5,7 +5,7 @@ import psutil
 from datetime import datetime
 import threading
 import time
-
+import csv
 TAB_1 = '\t - '
 TAB_2 = '\t\t - '
 TAB_3 = '\t\t\t - '
@@ -19,6 +19,8 @@ DATA_TAB_4 = '\t\t\t\t '
 
 def main():
     global start
+    global extract_ip
+    extract_ip = 0
     start = datetime.now()
     global endtime
     endtime = 0
@@ -45,6 +47,7 @@ def main():
             one = TAB_1 + 'IPv4 Packet:'
             two = TAB_2 + 'Version: {}, Header Length: {}, TTL: {}'.format(version, header_length, ttl)
             three = TAB_2 + 'Protocol: {}, Source: {}, Target: {}'.format(proto, src, target)
+            extract_ip = target
             f = open("thread1output.txt", "a")
             f.write("\n{}\n{}\n{}".format(one,two,three))
 
@@ -115,13 +118,23 @@ def resource_check():
         f = open("thread2output.txt", "a")
         f.write("\naverageicmp : {}\naveragetcp : {}\naverageudp : {}\n\n".format(averageicmp, averagetcp, averageudp))
         f.close()
-    if ( endtime % 60000) == 0:
-        if psutil.virtual_memory()[2] >= 70:
-            load1, load5, load15 = psutil.getloadavg()
-            cpu_usage = (load15 / os.cpu_count()) * 100
-            if cpu_usage >= 60:
-                if (averageicmp >= 0.01) or (averagetcp >= 0.2) or (averageudp >= 0.003):
-                    print("test Passed")
+        if ( endtime % 60000) == 0:
+            if psutil.virtual_memory()[2] >= 70:
+                load1, load5, load15 = psutil.getloadavg()
+                cpu_usage = (load15 / os.cpu_count()) * 100
+                if cpu_usage >= 60:
+                    if (averageicmp >= 0.01) or (averagetcp >= 0.2) or (averageudp >= 0.003):
+                        print("test Passed")
+                        # have to create authentic traffic and fake traffic distinguish logic
+                        data_list = [averageudp, averagetcp, averageicmp, extract_ip]
+                        fields = ["averageudp", "averagetcp", "averageicmp", "extract_ip"]
+                        filename = "iplist.csv"
+                        with open(filename, 'w') as csvfile:
+                            csvwriter = csv.writer(csvfile)
+                            # writing the fields
+                            csvwriter.writerow(fields)
+                            # writing the data rows
+                            csvwriter.writerows(rows)
 
 
 # Unpack ethernet frame

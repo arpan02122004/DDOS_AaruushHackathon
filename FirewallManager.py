@@ -1,5 +1,5 @@
 from netmiko import ConnectHandler
-fw_01 = {'host': '192.168.0.21',
+fw_01 = {'host': '10.5.242.60',
          'username': 'admin',
           'password': 'arpanfirewall',
           'device_type': 'fortinet'
