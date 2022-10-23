@@ -40,7 +40,7 @@ def main():
             two = TAB_2 + 'Version: {}, Header Length: {}, TTL: {}'.format(version, header_length, ttl)
             three = TAB_2 + 'Protocol: {}, Source: {}, Target: {}'.format(proto, src, target)
             f = open("thread1output.txt", "a")
-            f.write("\n",one, "\n", two, "\n", three)
+            f.write("\n{}\n{}\n{}".format(one,two,three))
 
             #ICMP
             if proto == 1:
