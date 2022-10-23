@@ -4,6 +4,7 @@ import textwrap
 import psutil
 from datetime import datetime
 import threading
+import time
 
 TAB_1 = '\t - '
 TAB_2 = '\t\t - '
@@ -97,13 +98,13 @@ def resource_check():
     averagetcp = 0
     averageudp = 0
 
-    print("\n\n\n endtime \n\n\n", endtime)
+    print("\n\n\n endtime : ", endtime)
     #Average values are there by running NetwirkMonitor Script for 3 hours
     averageicmp = float(numbericmp/endtime)
     averagetcp = float(numbertcp/endtime)
     averageudp = float(numberudp/endtime)
     while True:
-        f = open("thhread2output.txt", "a")
+        f = open("thread2output.txt", "a")
         f.write("\naverageicmp : {}\naveragetcp : {}\naverageudp : {}".format(averageicmp, averagetcp, averageudp))
         f.close()
     if ( endtime % 60000) == 0:
@@ -178,4 +179,5 @@ if __name__ == "__main__":
     t1 = threading.Thread(target=main)
     t2 = threading.Thread(target=resource_check)
     t1.start()
+    time.sleep(5)
     t2.start()
